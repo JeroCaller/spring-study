@@ -6,5 +6,27 @@
 </head>
 <body>
 	<p th:text="|${user.id}님 환영합니다|"></p>
+	
+	<p>상품 목록</p>
+	<table border="1">
+		<tr>
+			<th>코드</th>
+			<th>상품명</th>
+			<th>가격</th>
+			<th>카테고리</th>
+		</tr>
+		<th:block th:if="${products.size > 0}">
+			<tr th:each="prod:${products}">
+				<td th:text="${prod.id}"></td>
+				<td th:text="${prod.name}"></td>
+				<td th:text="${prod.price}"></td>
+				<td th:text="${prod.category}"></td>
+			</tr>
+		</th:block>
+		<tr>
+			<td colspan="4" th:text="|총 물품의 수: ${products.size}개|"></td>
+		</tr>
+	</table>
+	<a th:href="@{/}">메인으로 돌아가기</a>
 </body>
 </html>

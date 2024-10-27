@@ -1,5 +1,7 @@
 package com.jerocaller.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -8,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.jerocaller.model.ProductDto;
 import com.jerocaller.model.UserDto;
 import com.jerocaller.model.WebDao;
 
@@ -50,6 +53,10 @@ public class WebController {
 		// 유저 정보를 싣고 View로 전달. 
 		// Servlet에서의 request.setAttribute()와 동일.
 		model.addAttribute("user", selectedUser);
+		
+		List<ProductDto> products = dao.getAllProducts();
+		model.addAttribute("products", products);
+		
 		return "products";
 	}
 }
