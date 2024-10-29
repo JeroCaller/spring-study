@@ -4,7 +4,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import com.jerocaller.controller.formbeans.UserBean;
 
 @Controller
 public class RequestParamController {
@@ -31,5 +34,16 @@ public class RequestParamController {
 		model.addAttribute("name", userName);
 		model.addAttribute("job", userJob);
 		return "/param/userInfo";
+	}
+	
+	@GetMapping("/userinfo")
+	public String goToUserPage() {
+		return "/param/userMain";
+	}
+	
+	@PostMapping("/userinfo")
+	public String showUserInfo(UserBean bean, Model model) {
+		model.addAttribute("userData", bean);
+		return "/param/userInfoWithBean";
 	}
 }

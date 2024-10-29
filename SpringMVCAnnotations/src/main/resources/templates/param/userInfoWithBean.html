@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<h3>유저 입력 정보</h3>
+	<ul th:object="${userData}">
+		<li>
+			<span>닉네임 : </span>
+			<span th:text="*{name}"></span>
+		</li>
+		<li>
+			<span>직업 : </span>
+			<span th:text="*{job}"></span>
+		</li>
+		<li>
+			<span>나이 : </span>
+			<span th:text="*{age}"></span>
+		</li>
+	</ul>
+</body>
+</html>
