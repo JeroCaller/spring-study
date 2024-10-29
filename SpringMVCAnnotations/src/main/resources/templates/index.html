@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<h1>메인 페이지</h1>
+	<ul>
+		<li>
+			<a th:href="@{/mypage/mypages}">마이 페이지</a>
+		</li>
+		<li>
+			<a th:href="@{/mypage/mypages/myhome}">마이 홈페이지</a>
+		</li>
+		<li>
+			<a th:href="@{/mypage/mypages/config}">마이 페이지 환경 설정</a>
+		</li>
+	</ul>
+</body>
+</html>
