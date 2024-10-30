@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script type="module" src="/js/fetch.js"></script>
+</head>
+<body>
+	<h3>유저 정보 입력</h3>
+	<form th:action="@{/requestBody}" method="post" name="userForm">
+		<ul>
+			<li>
+				<span>닉네임 : </span>
+				<input type="text" name="name" />
+			</li>
+			<li>
+				<span>직업 : </span>
+				<input type="text" name="job" />
+			</li>
+			<li>
+				<span>나이 : </span>
+				<input type="number" name="age" />
+			</li>
+		</ul>
+		<input type="submit" value="입력"/>
+	</form>
+</body>
+</html>
