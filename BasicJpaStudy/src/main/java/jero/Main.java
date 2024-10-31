@@ -14,8 +14,7 @@ public class Main {
 			= new AnnotationConfigApplicationContext(Main.class);
 		
 		Business business = context.getBean("business", Business.class);
-		business.printAllProducts();
-		business.insertOne();
-		business.printAllProducts();
+		
+		business.crudPrint();
 	}
 }
