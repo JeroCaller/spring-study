@@ -6,6 +6,8 @@
 </head>
 <body>
 	<h1>사이트 회원목록 조회</h1>
-	<a th:href="@{/userList}">회원목록 조회</a>
+	<p><a th:href="@{/userList}">회원목록 조회</a></p>
+	<p><a th:href="@{/userList2?classNumber=1}">클래스 넘버로 회원목록 조회</a></p>
+	<p><a th:href="@{/userList3?min=3000&max=5000}">마일리지로 회원목록 조회</a></p>
 </body>
 </html>
