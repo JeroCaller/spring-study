@@ -37,11 +37,13 @@ public class Business {
 				.stream()
 				.map(DtoEntityConverter :: toDto)
 				.collect(Collectors.toList());*/
-		return resultToDtos(repository.findByClassNumberAndRecommByNotNull(classNumber));
+		//return resultToDtos(repository.findByClassNumberAndRecommByNotNull(classNumber));
+		return resultToDtos(repository.findByClassNumberAndRecommBy(classNumber));
 	}
 	
 	public List<SiteUsersDto> getUsersByMileageBetween(int minimum, int maxinum) {
-		return resultToDtos(repository.findByMileageBetweenOrderByMileageDesc(minimum, maxinum));
+		//return resultToDtos(repository.findByMileageBetweenOrderByMileageDesc(minimum, maxinum));
+		return resultToDtos(repository.findByMileage(minimum, maxinum));
 	}
 	
 	private List<SiteUsersDto> resultToDtos(List<SiteUsers> entityResults) {
