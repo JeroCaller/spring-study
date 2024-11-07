@@ -1,0 +1,9 @@
+@charset "UTF-8";
+
+th, td {
+	text-align: center;
+}
+
+body {
+	padding: 2em;
+}
