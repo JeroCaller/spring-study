@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.jerocaller.model.service.Business;
@@ -42,5 +43,26 @@ public class MyController {
 	) {
 		model.addAttribute("users", business.getUsersByMileageBetween(minimum, maximum));
 		return "/userList";
+	}
+	
+	@GetMapping("/bonus")
+	public String goToBonusPage() {
+		return "bonus";
+	}
+	
+	@PostMapping("/bonus")
+	public String bonus(
+			Model model,
+			@RequestParam("classNumber") int classNumber,
+			@RequestParam("bonus") int bonus
+	) {
+		boolean result = business.giveBonusForClassNumber(bonus, classNumber);
+		if (!result) return "redirect:/failed";
+		return "redirect:/";
+	}
+	
+	@GetMapping("/failed")
+	public String goToFailPage() {
+		return "failed";
 	}
 }

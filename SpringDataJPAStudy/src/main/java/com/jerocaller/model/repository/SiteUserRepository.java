@@ -3,10 +3,13 @@ package com.jerocaller.model.repository;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.jerocaller.model.entity.SiteUsers;
+
+import jakarta.transaction.Transactional;
 
 public interface SiteUserRepository 
 	extends JpaRepository<SiteUsers, Integer> {
@@ -31,4 +34,9 @@ public interface SiteUserRepository
 	
 	@Query("SELECT s FROM SiteUsers s WHERE s.mileage BETWEEN :min AND :max")
 	List<SiteUsers> findByMileage(@Param(value = "min") int minimum, @Param(value = "max") int maximum);
+	
+	@Modifying
+	@Transactional
+	@Query("UPDATE SiteUsers s SET s.mileage = s.mileage + ?1 WHERE s.classNumber = ?2")
+	int giveBonusMileage(int bonus, int classNumber);
 }

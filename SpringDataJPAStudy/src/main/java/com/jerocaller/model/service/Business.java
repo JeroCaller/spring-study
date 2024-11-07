@@ -46,6 +46,19 @@ public class Business {
 		return resultToDtos(repository.findByMileage(minimum, maxinum));
 	}
 	
+	/**
+	 * 특정 클래스 넘버에 해당하는 모든 유저들에게 보너스 마일리지 지급. 
+	 * DB에는 추가된 마일리지로 업데이트된다. 
+	 * @param bonus
+	 * @param classNumber
+	 * @return - 업데이트 성공 시 true, 실패 시 false
+	 */
+	public boolean giveBonusForClassNumber(int bonus, int classNumber) {
+		int result = repository.giveBonusMileage(bonus, classNumber);
+		if (result == 0) return false;
+		return true;
+	}
+	
 	private List<SiteUsersDto> resultToDtos(List<SiteUsers> entityResults) {
 		return entityResults.stream()
 				.map(DtoEntityConverter :: toDto)
