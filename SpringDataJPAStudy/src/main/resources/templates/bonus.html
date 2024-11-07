@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeLeaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<h2>보너스 마일리지 지급해주기</h2>
+	<form th:action="@{/bonus}" method="post">
+		<p>지급 대상 클래스 넘버 : <input type="number" name="classNumber"> </p>
+		<p>지급할 보너스 마일리지 : <input type="number" name="bonus"></p>
+		<button type="submit">지급하기</button>
+	</form>
+	<p>지급 후 전체 회원 목록으로 자동 이동합니다.</p>
+	<p><a th:href="@{/}">메인으로 돌아가기</a></p>
+</body>
+</html>
