@@ -26,6 +26,7 @@ public class SiteUsersConverter
 		dto.setUsername(entity.getUsername());
 		dto.setAverPurchase(entity.getAverPurchase());
 		dto.setRecommBy(entity.getRecommBy());
+		dto.setUserClassInfoDto(converter.toDto(entity.getUserClassInfo()));
 		
 		return dto;
 	}
