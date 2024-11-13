@@ -17,7 +17,7 @@
 </head>
 <body>
 	<h2>새 회원 추가</h2>
-	<form th:action="@{/insert}" method="post">
+	<form th:action="@{/site/insert}" method="post">
 		<div class="row g-6 align-items-center">
 			<div class="col col-md-2">
 				<label for="username" class="col-form-label"> 유저 닉네임 </label>
@@ -61,9 +61,9 @@
 			</div>
 			<div class="col col-md-3">
 				<select class="form-select border border-dark" 
-					id="className" name="className"
+					id="classNumber" name="classNumber"
 				>
-					<option class="text-secondary" selected>(회원 등급 선택)</option>
+					<option class="text-secondary" selected value="">(회원 등급 선택)</option>
 					<th:block th:each="uClass : ${uClasses}">
 						<option th:text="${uClass.className}" th:value="${uClass.classNumber}"></option>
 					</th:block>
@@ -80,9 +80,9 @@
 				<select class="form-select border border-dark" 
 					id="recommBy" name="recommBy"
 				>
-					<option class="text-secondary" selected>(없음)</option>
+					<option class="text-secondary" selected value="">(없음)</option>
 					<th:block th:each="recomm : ${recomms}">
-						<option th:text="${recomm.recommBy}" th:value="${recomm.recommBy}"></option>
+						<option th:text="${recomm}" th:value="${recomm}"></option>
 					</th:block>
 				</select>
 			</div>

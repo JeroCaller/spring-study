@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<link rel="stylesheet" href="/css/table.css">
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+	rel="stylesheet"
+	integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+	crossorigin="anonymous">
+<script
+	src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+	integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+	crossorigin="anonymous"></script>
+</head>
+<body>
+	<th:block th:if="${newUser != null}">
+		<h2>새 회원 등록을 성공적으로 완료하였습니다.</h2>
+		<p>새 회원 정보</p>
+		<table class="table table-hover">
+			<thead class="table-warning">
+				<tr>
+					<th>멤버 번호</th>
+					<th>닉네임</th>
+					<th>등급</th>
+					<th>가입일자</th>
+					<th>보유 마일리지</th>
+					<th>월 평균 구매액(단위: 원)</th>
+					<th>추천자</th>
+				</tr>
+			</thead>
+			<tbody class="table-primary">
+				<tr>
+					<td th:text="${newUser.memberId}"></td>
+					<td th:text="${newUser.username}"></td>
+					<td th:text="${newUser.userClassInfoDto.className}"></td>
+					<td th:text="${newUser.signUpDate}"></td>
+					<td th:text="${newUser.mileage}"></td>
+					
+					<th:block th:if="${newUser.averPurchase != null && newUser.averPurchase != 0}">
+						<td th:text="${newUser.averPurchase}"></td>
+					</th:block>
+					<th:block th:unless="${newUser.averPurchase != null && newUser.averPurchase != 0}">
+						<td>-</td>
+					</th:block>
+					
+					<th:block th:if="${newUser.recommBy != null}">
+						<td th:text="${newUser.recommBy}"></td>
+					</th:block>
+					<th:block th:unless="${newUser.recommBy != null}">
+						<td>-</td>
+					</th:block>
+				</tr>
+			</tbody>
+		</table>
+	</th:block>
+	<th:block th:unless="${newUser != null}">
+		<h4>어라? 새 회원 등록 실패!</h4>
+	</th:block>
+	<a th:href="@{/site}" class="btn btn-primary ms-3">되돌아가기</a>
+</body>
+</html>

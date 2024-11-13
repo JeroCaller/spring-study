@@ -13,5 +13,9 @@ public interface SiteUsersRepository
 	@Query(value = "SELECT MAX(s.memberId) FROM SiteUsers s")
 	Integer findByIdMax();
 	
-	List<SiteUsers> findByRecommByNotNull();
+	@Query("SELECT DISTINCT s.recommBy FROM SiteUsers s")
+	List<String> findDistinctByRecommByNotNull();
+	
+	@Query("SELECT s.username FROM SiteUsers s")
+	List<String> findAllUsername();
 }
