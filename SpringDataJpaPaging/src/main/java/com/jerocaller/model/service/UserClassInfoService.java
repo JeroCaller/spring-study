@@ -13,7 +13,7 @@ import com.jerocaller.model.entity.UserClassInfo;
 import com.jerocaller.model.repository.UserClassInfoRepository;
 
 @Service
-public class UserClassInfoService implements ServiceInter {
+public class UserClassInfoService implements ServiceInter{
 	
 	@Autowired
 	private UserClassInfoRepository userClassInfoRepository;

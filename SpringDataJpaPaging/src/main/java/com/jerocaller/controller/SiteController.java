@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.jerocaller.model.service.ServiceInter;
+import com.jerocaller.model.service.SiteUserService;
 
 @Controller
 @RequestMapping("/site")
@@ -28,7 +29,10 @@ public class SiteController {
 	
 	@GetMapping("/userList")
 	public String showAllUsers(Model model) {
-		siteUserService.selectAll(model, "users");
+		SiteUserService serviceImpl = (SiteUserService)siteUserService;
+		
+		//siteUserService.selectAll(model, "users");
+		serviceImpl.selectAllSorted(model, "users");
 		return "userList";
 	}
 	
