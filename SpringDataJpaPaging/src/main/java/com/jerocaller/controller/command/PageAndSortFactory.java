@@ -1,12 +1,10 @@
 package com.jerocaller.controller.command;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public class PageAndSortFactory {
-	private static final PageAndSortFactory factory = new PageAndSortFactory();
-	private PageAndSortFactory() {}
-	public static PageAndSortFactory getFactory() {
-		return factory;
-	}
-	
+
 	public CommandInter getCommand(Commands command) {
 		if (command == null) return null;
 		

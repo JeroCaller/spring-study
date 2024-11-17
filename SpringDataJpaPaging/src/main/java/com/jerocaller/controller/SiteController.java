@@ -36,6 +36,9 @@ public class SiteController {
 	@Qualifier("userClassInfoService")
 	private ServiceInter userClassInfoService;
 	
+	@Autowired
+	private PageAndSortFactory factory;
+	
 	@GetMapping("")
 	public String toIndex() {
 		return "index";
@@ -50,7 +53,6 @@ public class SiteController {
 					defaultValue = "PAGING"
 			) Commands command
 	) {
-		PageAndSortFactory factory = PageAndSortFactory.getFactory();
 		CommandInter commander = factory.getCommand(command);
 		commander.processCommand(model, siteUserService, pRequest);
 		
