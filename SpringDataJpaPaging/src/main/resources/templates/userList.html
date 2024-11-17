@@ -15,9 +15,16 @@
 			<a th:href="@{/site}" class="btn btn-primary">되돌아가기</a>
 		</div>
 		
-		<div th:if="${users != null && users.totalElements > 0}">
-			<p th:text="|전체 조회 회원 수: ${users.totalElements}명|"></p>
-		</div>
+		<th:block th:if="${users instanceof T(org.springframework.data.domain.Page)}">
+			<div th:if="${users != null && users.totalElements > 0}">
+				<p th:text="|전체 조회 회원 수: ${users.totalElements}명|"></p>
+			</div>
+		</th:block>
+		<th:block th:unless="${users instanceof T(org.springframework.data.domain.Page)}">
+			<div th:if="${users != null && users.size > 0}">
+				<p th:text="|전체 조회 회원 수: ${users.size}명|"></p>
+			</div>
+		</th:block>
 	</div>
 	
 	<table class="table table-hover">
@@ -61,52 +68,54 @@
 		</tbody>
 	</table>
 	
-	<nav aria-label="Page navigation example">
-  		<ul class="pagination justify-content-center">
-  			<!-- 이전 버튼 시작 -->
-  			<th:block th:if="${nav.currentPage - 1 > 0}">
-  				<li class="page-item">
-      				<a class="page-link" 
-      					th:href="@{/site/userList(selectedPage=${nav.currentPage - 1})}"
-      				>이전</a>
-    			</li>
-  			</th:block>
-  			<th:block th:unless="${nav.currentPage - 1 > 0}">
-  				<li class="page-item">
-      				<a class="page-link disabled" href="#">이전</a>
-    			</li>
-  			</th:block>
-  			<!-- 이전 버튼 끝 -->
-  			<!-- 페이지 번호 버튼 구성 -->
-  			<th:block th:each="page : ${#numbers.sequence(nav.startPage, nav.endPage)}">
-  				<th:block th:if="${nav.currentPage == page}">
-  					<li class="page-item active">
-  				</th:block>
-  				<th:block th:unless="${nav.currentPage == page}">
-  					<li class="page-item">
-  				</th:block>
-  					<a class="page-link" 
-  						th:href="@{/site/userList(selectedPage=${page})}"
-      					th:text="${page}"
-  					></a>
-  				</li>
-  			</th:block>
-  			<!-- 페이지 번호 버튼 구성 끝 -->
-  			<!-- 다음 버튼 구성 -->
-  			<th:block th:if="${nav.currentPage + 1 <= nav.endPage}">
-  				<li class="page-item">
-      				<a class="page-link" 
-      					th:href="@{/site/userList(selectedPage=${nav.currentPage + 1})}"
-      				>다음</a>
-    			</li>
-  			</th:block>
-  			<th:block th:unless="${nav.currentPage + 1 <= nav.endPage}">
-  				<li class="page-item">
-      				<a class="page-link disabled" href="#">다음</a>
-    			</li>
-  			</th:block>
-  			<!-- 다음 버튼 구성 끝 -->
-  		</ul>
-	</nav>
+	<th:block th:if="${users instanceof T(org.springframework.data.domain.Page)}">
+		<nav aria-label="Page navigation example">
+	  		<ul class="pagination justify-content-center">
+	  			<!-- 이전 버튼 시작 -->
+	  			<th:block th:if="${nav.currentPage - 1 > 0}">
+	  				<li class="page-item">
+	      				<a class="page-link" 
+	      					th:href="@{/site/userList(selectedPage=${nav.currentPage - 1})}"
+	      				>이전</a>
+	    			</li>
+	  			</th:block>
+	  			<th:block th:unless="${nav.currentPage - 1 > 0}">
+	  				<li class="page-item">
+	      				<a class="page-link disabled" href="#">이전</a>
+	    			</li>
+	  			</th:block>
+	  			<!-- 이전 버튼 끝 -->
+	  			<!-- 페이지 번호 버튼 구성 -->
+	  			<th:block th:each="page : ${#numbers.sequence(nav.startPage, nav.endPage)}">
+	  				<th:block th:if="${nav.currentPage == page}">
+	  					<li class="page-item active">
+	  				</th:block>
+	  				<th:block th:unless="${nav.currentPage == page}">
+	  					<li class="page-item">
+	  				</th:block>
+	  					<a class="page-link" 
+	  						th:href="@{/site/userList(selectedPage=${page})}"
+	      					th:text="${page}"
+	  					></a>
+	  				</li>
+	  			</th:block>
+	  			<!-- 페이지 번호 버튼 구성 끝 -->
+	  			<!-- 다음 버튼 구성 -->
+	  			<th:block th:if="${nav.currentPage + 1 <= nav.endPage}">
+	  				<li class="page-item">
+	      				<a class="page-link" 
+	      					th:href="@{/site/userList(selectedPage=${nav.currentPage + 1})}"
+	      				>다음</a>
+	    			</li>
+	  			</th:block>
+	  			<th:block th:unless="${nav.currentPage + 1 <= nav.endPage}">
+	  				<li class="page-item">
+	      				<a class="page-link disabled" href="#">다음</a>
+	    			</li>
+	  			</th:block>
+	  			<!-- 다음 버튼 구성 끝 -->
+	  		</ul>
+		</nav>
+	</th:block>
 </body>
 </html>

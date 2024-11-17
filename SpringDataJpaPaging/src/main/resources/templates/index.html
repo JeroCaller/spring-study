@@ -6,9 +6,15 @@
 </head>
 <body>
 	<h1>메인 메뉴</h1>
-	<p>
-		<a th:href="@{/site/userList}">전체 유저 조회</a>
-	</p>
+	<form th:action="@{/site/userList}" method="GET">
+		<button type="submit">전체 유저 조회</button>
+		<select name="command">
+			<option value="ALL" selected="selected">ALL</option>
+			<option value="SORT">SORT</option>
+			<option value="PAGING">PAGING</option>
+		</select>
+	</form>
+	
 	<p>
 		<a th:href="@{/site/classList}">전체 등급 조회</a>
 	</p>
