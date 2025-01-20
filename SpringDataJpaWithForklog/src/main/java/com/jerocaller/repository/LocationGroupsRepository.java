@@ -11,6 +11,7 @@ public interface LocationGroupsRepository
 	extends JpaRepository<LocationGroups, Integer> {
 	
 	@Query(value = "SELECT MAX(lg.no) FROM LocationGroups lg")
+	@Deprecated
 	Integer findMaxId();
 	
 	Optional<LocationGroups> findByName(String name);
