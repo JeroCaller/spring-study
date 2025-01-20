@@ -29,7 +29,6 @@ public class EateriesProcess {
      * 업데이트 내용을 반영하기 위해 반드시 @Transactional 어노테이션을 부여해야 함.
      * 그렇지 않으면 내용이 DB에 반영되지 않음을 확인함.
      * 
-     * @author JeroCaller 
      * @param eateryNo - 음식점 엔티티 No
      * @return - true 시 특정 음식점 조회수 1 증가 DB 반영 성공. false 시 입력된 no 값에 
      * 해당하는 음식점 데이터를 DB에서 조회하지 못함을 의미.
