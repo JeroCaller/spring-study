@@ -46,7 +46,6 @@ public class LocationController {
 		try {
 			locationProcess.insertLocationThree(requestDto);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}*/
 		
