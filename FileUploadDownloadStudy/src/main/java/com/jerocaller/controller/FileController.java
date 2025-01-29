@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jerocaller.dto.ResponseJson;
-import com.jerocaller.service.FileService;
+import com.jerocaller.service.FileServiceInterface;
 
 import lombok.RequiredArgsConstructor;
 
@@ -16,6 +16,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class FileController {
 	
-	private final FileService fileService;
+	private final FileServiceInterface fileService;
 	
 }

@@ -26,6 +26,7 @@ public class FileEntity {
 	@Column(nullable = false, length = 11)
 	private Integer id;
 	
+	// 서버에 실질적으로 저장되는 파일의 경로 
 	@Column(name = "path", nullable = false, length = 500)
 	private String filePath;
 	

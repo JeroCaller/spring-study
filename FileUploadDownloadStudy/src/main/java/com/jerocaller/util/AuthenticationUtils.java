@@ -1,6 +1,7 @@
 package com.jerocaller.util;
 
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -29,15 +30,9 @@ public class AuthenticationUtils {
 		Authentication auth = SecurityContextHolder.getContext()
 			.getAuthentication();
 		
-		log.info("사용자 정보 출력 ---");
-		auth.getAuthorities().forEach(authz -> {
-			log.info(authz.getAuthority());
-			if (authz.getAuthority().equals("ROLE_ANONYMOUS")) {
-				throw new NotAuthenticatedUserException();
-			}
-		});
-		
-		if (auth == null || !auth.isAuthenticated()) {
+		if (auth == null || !auth.isAuthenticated() || 
+			isAnonymous(auth)
+		) {
 			throw new NotAuthenticatedUserException();
 		}
 		
@@ -60,11 +55,32 @@ public class AuthenticationUtils {
 		Authentication auth = SecurityContextHolder.getContext()
 			.getAuthentication();
 		
-		if (auth == null || !auth.isAuthenticated()) {
+		if (auth == null || !auth.isAuthenticated() || 
+			isAnonymous(auth)
+		) {
 			throw new NotAuthenticatedUserException();
 		}
 		
 		return (UserDetails) auth.getPrincipal();
+		
+	}
+	
+	/**
+	 * 현재 사용자가 인증되지 않은 익명의 사용자인지 판별.
+	 * 
+	 * @param auth
+	 * @return
+	 */
+	public static boolean isAnonymous(Authentication auth) {
+		
+		log.info("사용자 정보 출력 ---");
+		for (GrantedAuthority authz : auth.getAuthorities()) {
+			log.info(authz.getAuthority());
+			if (authz.getAuthority().equals("ROLE_ANONYMOUS")) {
+				return true;  // 익명의 사용자로 판단
+			}
+		}
+		return false; // 인증된 사용자
 		
 	}
 	
