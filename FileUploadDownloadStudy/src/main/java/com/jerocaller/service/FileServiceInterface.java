@@ -1,8 +1,8 @@
 package com.jerocaller.service;
 
 import java.util.List;
+import java.util.Map;
 
-import org.springframework.core.io.Resource;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.jerocaller.dto.FileResponse;
@@ -15,7 +15,7 @@ import com.jerocaller.dto.FileResponse;
  * 파일 업로드 및 다운로드 기능을 구현하는 서비스 클래스들은 모두 
  * 이 인터페이스를 구현해야 함. 
  */
-public interface FileServiceInterface {
+public interface FileServiceInterface<Service> {
 	
 	/**
 	 * 클라이언트로부터 넘어온 파일과 그 경로를 각각 서버 내 폴더 및 
@@ -54,5 +54,15 @@ public interface FileServiceInterface {
 	 * 자유롭게 하기 위해 Object로 선언함. 
 	 */
 	Object deleteByFileId(int id);
+	
+	/**
+	 * 여러 파일들의 업로드 혹은 다운로드 시 실패한 파일 경로들을 
+	 * 로깅할 목적의 데이터를 반환하는 메서드.
+	 * 
+	 * @return
+	 */
+	default Map<String, String> getFailedPaths() {
+		return null;
+	}
 	
 }

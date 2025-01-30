@@ -8,4 +8,7 @@ public interface ResponseMessages {
 	
 	final String READ_SUCCESS = "조회 성공";
 	
+	final String DELETE_SUCCESS = "삭제 성공";
+	final String DELETE_FAILED = "삭제 실패";
+	
 }

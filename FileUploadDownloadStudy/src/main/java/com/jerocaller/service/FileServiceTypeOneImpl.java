@@ -1,6 +1,5 @@
 package com.jerocaller.service;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
@@ -40,7 +39,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class FileServiceTypeOneImpl implements FileServiceInterface {
+public class FileServiceTypeOneImpl implements FileServiceInterface<FileServiceTypeOneImpl> {
 	
 	private final FileEntityRepository fileRepository;
 	private final MembersRepository membersRepository;
@@ -50,6 +49,9 @@ public class FileServiceTypeOneImpl implements FileServiceInterface {
 	// uploadFiles() 메서드 실행 도중 특정 파일이 업로드에 실패했을 때 
 	// 어떤 파일이 업로드에 실패했는지 로깅하기 위한 필드.
 	private final Map<String, String> failedPaths = new HashMap<String, String>();
+	
+	// 업로드에 성공한 파일명들을 담아 특정 메서드의 반환값이 될 필드.
+	private final List<String> successFileNames = new ArrayList<String>();
 	
 	@Value("${file.upload-dir}")
 	private String uploadBaseDir;
@@ -100,6 +102,7 @@ public class FileServiceTypeOneImpl implements FileServiceInterface {
 		
 	}
 	
+	@Override
 	public Map<String, String> getFailedPaths() {
 		return failedPaths;
 	}
@@ -112,6 +115,7 @@ public class FileServiceTypeOneImpl implements FileServiceInterface {
 	{
 		
 		failedPaths.clear();
+		successFileNames.clear();
 		
 		// 현재 사용자의 닉네임 추출. 
 		// 미인증 사용자의 경우 NotAuthenticatedUserException 예외 발생
@@ -165,17 +169,18 @@ public class FileServiceTypeOneImpl implements FileServiceInterface {
 			Members currentMember = membersRepository.findById(username)
 				.orElseThrow(() -> new EntityNotFoundException("존재하지 않는 유저입니다."));
 			FileEntity fileEntity = FileEntity.builder()
-				.filePath(filePath.toFile().getAbsolutePath())
+				.filePath(filePath.toString())
 				.members(currentMember)
 				.build();
 			fileRepository.save(fileEntity);
+			
+			// 파일 업로드 및 파일 경로의 DB 저장까지 성공적으로 마친 파일명을 기록.
+			successFileNames.add(file.getOriginalFilename());
+			
 		}
 		
-		if (failedPaths.size() > 0) {
-			return false;  // 전체 파일들 중 일부 또는 모두 업로드 되지 않은 경우.
-		}
+		return successFileNames;
 		
-		return true; // 모든 파일들이 정상적으로 업로드 된 경우.
 	}
 	
 	@Override
@@ -183,6 +188,7 @@ public class FileServiceTypeOneImpl implements FileServiceInterface {
 		
 		String username = AuthenticationUtils.getLoggedinUserInfo()
 			.getNickname();
+		log.info("현재 사용자 닉네임: " + username);
 		
 		Members currentMember = membersRepository.findById(username)
 			.orElseThrow(() -> new EntityNotFoundException("존재하지 않는 유저입니다."));
@@ -267,9 +273,11 @@ public class FileServiceTypeOneImpl implements FileServiceInterface {
 	@Override
 	public Object deleteByFileId(int id) {
 		
+		// TODO - DB 내 경로 삭제 뿐만 아니라 실제로 파일 삭제하는 로직 추가 필요
+		
 		try {
 			fileRepository.deleteById(id);
-		} catch (IllegalArgumentException e) {
+		} catch (Exception e) {
 			return false;  // 삭제 실패.
 		}
 		

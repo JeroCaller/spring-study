@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class FileEntity {
+public class FileEntity extends BaseEntity {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,7 +31,7 @@ public class FileEntity {
 	private String filePath;
 	
 	@ManyToOne
-	@JoinColumn(name = "members", nullable = false)
+	@JoinColumn(name = "member", nullable = false)
 	private Members members;
 	
 }
