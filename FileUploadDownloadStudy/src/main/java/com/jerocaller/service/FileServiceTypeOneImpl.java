@@ -24,6 +24,8 @@ import org.springframework.web.multipart.MultipartFile;
 import com.jerocaller.dto.FileResponse;
 import com.jerocaller.entity.FileEntity;
 import com.jerocaller.entity.Members;
+import com.jerocaller.exception.FileInfoInDBNotDeletedException;
+import com.jerocaller.exception.FileNotDeletedException;
 import com.jerocaller.exception.FileNotFoundOrReadableException;
 import com.jerocaller.exception.IORuntimeException;
 import com.jerocaller.exception.NotAuthenticatedUserException;
@@ -184,7 +186,10 @@ public class FileServiceTypeOneImpl implements FileServiceInterface<FileServiceT
 	}
 	
 	@Override
-	public List<FileResponse> getFiles() throws EntityNotFoundException {
+	public List<FileResponse> getFiles() throws 
+		EntityNotFoundException,
+		NotAuthenticatedUserException
+	{
 		
 		String username = AuthenticationUtils.getLoggedinUserInfo()
 			.getNickname();
@@ -271,17 +276,37 @@ public class FileServiceTypeOneImpl implements FileServiceInterface<FileServiceT
 	}
 
 	@Override
-	public Object deleteByFileId(int id) {
+	public Object deleteByFileId(int id) throws 
+		EntityNotFoundException, 
+		IORuntimeException,
+		FileNotDeletedException,
+		FileInfoInDBNotDeletedException
+	{
 		
-		// TODO - DB 내 경로 삭제 뿐만 아니라 실제로 파일 삭제하는 로직 추가 필요
+		FileEntity targetFile = fileRepository.findById(id)
+			.orElseThrow(() -> new EntityNotFoundException("해당 파일 ID 미존재."));
 		
+		// 파일의 물리적 삭제 작업 시도.
+		Path targetPath = Paths.get(targetFile.getFilePath());
 		try {
-			fileRepository.deleteById(id);
-		} catch (Exception e) {
-			return false;  // 삭제 실패.
+			Files.deleteIfExists(targetPath);
+		} catch (IOException e) {
+			throw new IORuntimeException("IO 관련 예외 발생. " + e.getMessage());
 		}
 		
-		return true; // 삭제 성공
+		log.info("정말 파일이 물리적으로 삭제되었는가? " + Files.notExists(targetPath));
+		if (Files.exists(targetPath)) {
+			throw new FileNotDeletedException(targetPath.toString());
+		}
+		
+		// 파일을 물리적으로 삭제 성공 후, 해당 파일 정보를 DB 상에서 삭제.
+		try {
+			fileRepository.delete(targetFile);
+		} catch (Exception e) {
+			throw new FileInfoInDBNotDeletedException(e.getMessage());
+		}
+		
+		return null;  // 성공 시 아무것도 반환하지 않는다. 
 	}
 	
 }

@@ -84,4 +84,25 @@ public class AuthenticationUtils {
 		
 	}
 	
+	/**
+	 * 현재 사용자가 인증되지 않은 익명의 사용자인지 판별.
+	 * 
+	 * @return
+	 */
+	public static boolean isAnonymous() {
+		
+		Authentication auth = SecurityContextHolder.getContext()
+			.getAuthentication();
+		
+		log.info("사용자 정보 출력 ---");
+		for (GrantedAuthority authz : auth.getAuthorities()) {
+			log.info(authz.getAuthority());
+			if (authz.getAuthority().equals("ROLE_ANONYMOUS")) {
+				return true;  // 익명의 사용자로 판단
+			}
+		}
+		return false; // 인증된 사용자
+		
+	}
+	
 }

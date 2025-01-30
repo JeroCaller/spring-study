@@ -20,14 +20,18 @@ import com.jerocaller.common.ResponseMessages;
 import com.jerocaller.dto.FileResponse;
 import com.jerocaller.dto.FileSuccessFailed;
 import com.jerocaller.dto.ResponseJson;
-import com.jerocaller.exception.FileNotFoundOrReadableException;
-import com.jerocaller.exception.IORuntimeException;
+import com.jerocaller.exception.NotAuthenticatedUserException;
 import com.jerocaller.service.FileServiceInterface;
 import com.jerocaller.service.FileServiceTypeOneImpl;
+import com.jerocaller.util.AuthenticationUtils;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * 좀 더 엄격하게 하고자 한다면 A 사용자가 B 사용자의 파일을 
+ * 열람, 다운로드하거나 새 파일 삽입하지 않도록 방지하는 기능도 추가할 수 있음. 
+ */
 @RestController
 @RequestMapping("/files")
 @RequiredArgsConstructor
@@ -102,8 +106,17 @@ public class FileController {
 	public ResponseEntity<ResponseJson> getFileDetails() {
 		
 		ResponseJson responseJson = null;
+		List<FileResponse> results = null;
 		
-		List<FileResponse> results = fileService.getFiles();
+		try {
+			results = fileService.getFiles(); 
+		} catch (EntityNotFoundException | NotAuthenticatedUserException e) {
+			return ResponseJson.builder()
+				.httpStatus(HttpStatus.UNAUTHORIZED)
+				.message(e.getMessage())
+				.build()
+				.toResponseEntity();
+		}
 		
 		if (results.size() == 0) {
 			responseJson = ResponseJson.builder()
@@ -128,6 +141,16 @@ public class FileController {
 		Object result = null;
 		ResponseJson responseOnlyIfFailed = null;
 		
+		// 인증된 유저만 자신의 사진을 다운로드 할 수 있도록 하기 위해 
+		// 인증 여부 검사 후 미인증 시 다운로드 방지
+		if (AuthenticationUtils.isAnonymous()) {
+			return ResponseJson.builder()
+				.httpStatus(HttpStatus.UNAUTHORIZED)
+				.message(ResponseMessages.UNAUTHORIZED)
+				.build()
+				.toResponseEntity();
+		}
+		
 		try {
 			result = fileService.downloadByFileId(id);
 		} catch (EntityNotFoundException enfe) {
@@ -135,15 +158,10 @@ public class FileController {
 				.httpStatus(HttpStatus.NOT_FOUND)
 				.message(enfe.getMessage())
 				.build();
-		} catch (IORuntimeException ioe) {
+		} catch (RuntimeException e) {
 			responseOnlyIfFailed = ResponseJson.builder()
 				.httpStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-				.message(ioe.getMessage())
-				.build();
-		} catch (FileNotFoundOrReadableException fnfe) {
-			responseOnlyIfFailed = ResponseJson.builder()
-				.httpStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-				.message(fnfe.getMessage())
+				.message(e.getMessage())
 				.build();
 		}
 		
@@ -160,14 +178,24 @@ public class FileController {
 		
 		ResponseJson responseJson = null;
 		
-		boolean result = (boolean) fileService.deleteByFileId(id);
-		
-		if (!result) {
+		try {
+			fileService.deleteByFileId(id);
+		} catch (EntityNotFoundException enfe) {
+			responseJson = ResponseJson.builder()
+				.httpStatus(HttpStatus.NOT_FOUND)
+				.message(enfe.getMessage())
+				.build();
+		} catch (RuntimeException e) {
+			// 그 외 모든 커스텀 예외들은 모두 서버 내부에서 
+			// 작업 실행 중 발생한 것이기에 INTERNAL SERVER ERROR로 
+			// 응답 상태를 통일.
 			responseJson = ResponseJson.builder()
 				.httpStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-				.message(ResponseMessages.DELETE_FAILED)
+				.message(e.getMessage())
 				.build();
-		} else {
+		}
+		
+		if (responseJson == null) {
 			responseJson = ResponseJson.builder()
 				.httpStatus(HttpStatus.OK)
 				.message(ResponseMessages.DELETE_SUCCESS)

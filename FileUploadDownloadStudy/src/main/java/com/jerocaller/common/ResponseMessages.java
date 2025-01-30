@@ -11,4 +11,6 @@ public interface ResponseMessages {
 	final String DELETE_SUCCESS = "삭제 성공";
 	final String DELETE_FAILED = "삭제 실패";
 	
+	final String UNAUTHORIZED = "관련 권한이 없습니다.";
+	
 }
