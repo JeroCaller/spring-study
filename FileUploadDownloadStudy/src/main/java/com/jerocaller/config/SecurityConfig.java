@@ -55,7 +55,7 @@ public class SecurityConfig {
 		
 		httpSecurity
 			.csrf(csrf -> csrf.disable())
-			//.cors(cors -> cors.configurationSource(corsConfigurationSource()))
+			.cors(cors -> cors.configurationSource(corsConfigurationSource()))
 			.authorizeHttpRequests(auth -> auth
 				.requestMatchers(PermitAllRequestUriUtils.getPermitAllRequestUris())
 				.permitAll()  // 지정된 URL에 대한 접근은 모든 이들에게 허용.
@@ -75,10 +75,14 @@ public class SecurityConfig {
 	
 	public CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
-		configuration.setAllowedOrigins(Arrays.asList("http://localhost:8080/"));
+		configuration.setAllowedOrigins(Arrays.asList("http://localhost:8080/", "http://localhost:3000"));
 		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE"));
 		configuration.setAllowedHeaders(Arrays.asList("*"));
-		configuration.setAllowCredentials(true);
+		
+		// 클라이언트로부터 인증 정보(credential) 전송 시
+		// 이를 받도록 허용할 것인지 여부 설정. 
+		// 여기 백엔드에서와 프론트엔드 둘 모두 true로 설정해야 둘 사이에서 인증 정보를 교환할 수 있다. 
+		configuration.setAllowCredentials(true); 
 		
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", configuration);
