@@ -1,7 +1,9 @@
 package com.jerocaller.service;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
+import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -265,7 +267,14 @@ public class FileServiceTypeOneImpl implements FileServiceInterface<FileServiceT
 		log.info("파일의 MIME-TYPE : " + contentType);
 		
 		// 파일의 원래 이름 가져오기
-		String originalFileName = filePath.getFileName().toString();
+		String originalFileName = null;
+		try {
+			// 파일명에 한글이 포함된 경우 다운로드 도중 예외가 발생하므로 이를 utf-8로 인코딩한다. 
+			originalFileName = URLEncoder.encode(filePath.getFileName().toString(), "utf-8");
+		} catch (UnsupportedEncodingException e) {
+			log.error("잘못된 인코딩 방식입니다.");
+			originalFileName = filePath.getFileName().toString();
+		}
 		
 		// CONTENT_DISPOSITION : 해당 파일이 브라우저에서 열리지 않도록 함.
 		return ResponseEntity.ok()
