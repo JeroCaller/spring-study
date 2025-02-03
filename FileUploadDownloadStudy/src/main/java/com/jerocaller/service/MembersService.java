@@ -15,6 +15,7 @@ import com.jerocaller.exception.UserAlreadyExistException;
 import com.jerocaller.repository.MembersRepository;
 import com.jerocaller.util.AuthenticationUtils;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
@@ -31,6 +32,7 @@ public class MembersService {
 	private final PasswordEncoder passwordEncoder;
 	private final CustomUserDetailsService customUserDetailsService;
 	private final AuthService authService;
+	private final FileByMemberService fileByMemberService;
 	private final SecurityContextLogoutHandler securityContextLogoutHandler;
 	
 	/**
@@ -79,15 +81,20 @@ public class MembersService {
 		MembersRequest membersRequest, 
 		HttpServletRequest request,
 		HttpServletResponse response
-	) throws NotAuthenticatedUserException {
+	) throws NotAuthenticatedUserException, EntityNotFoundException {
 		
 		// 현재 인증된 정보가 없으면 런타임 예외 발생하여 throw함.
 		// 현재 인증된 사용자인지 판별과 동시에 기존 회원 정보 반환을 위한 코드.
 		UserDetails pastUserInfo = AuthenticationUtils
 			.getAuthedUserInfoAll();
 		
-		// 수정 전 정보 삭제
-		membersRepository.deleteById(pastUserInfo.getUsername());
+		// 수정 전 회원 정보
+		Members oldMember = membersRepository
+			.findById(pastUserInfo.getUsername())
+			.orElseThrow(() -> {
+				String message = "조회된 수정 전 닉네임을 찾을 수 없습니다.";
+				return new EntityNotFoundException(message);
+			});
 		
 		// 수정 후 정보 삽입
 		// 수정 후 패스워드는 암호화하여 DB에 저장한다.
@@ -97,12 +104,21 @@ public class MembersService {
 			.build();
 		Members updatedMember = membersRepository.save(willBeUpdatedMember);
 		
+		// 수정 전 닉네임 정보를 가지고 있는 모든 파일들의 닉네임 정보를 
+		// 수정 후 정보로 교체.;
+		fileByMemberService.updateUserInfoInFiles(oldMember, updatedMember);
+		
+		// 수정 전 정보 삭제
+		//membersRepository.deleteById(pastUserInfo.getUsername());
+		membersRepository.delete(oldMember);
+		
 		// 세션에 저장된 인증 정보를 수정 후 정보로 갱신
 		authService.login(membersRequest, request, response);
 		
 		return MembersHistory.builder()
 			.pastNickname(pastUserInfo.getUsername())
 			.newNickname(updatedMember.getNickname())
+			//.newNickname(willBeUpdatedMember.getNickname())
 			.build();
 	}
 	
@@ -117,10 +133,15 @@ public class MembersService {
 	public MembersResponse unregister(
 		HttpServletRequest request, 
 		HttpServletResponse response
-	) throws NotAuthenticatedUserException {
+	) throws NotAuthenticatedUserException, EntityNotFoundException {
 		
 		// 현재 인증된 사용자 정보 없을 시 예외 throw하고 종료됨.
 		UserDetails currentUserInfo = AuthenticationUtils.getAuthedUserInfoAll();
+		
+		// 회원이 보유한 모든 파일 삭제
+		fileByMemberService.deleteAllFilesByUsername(currentUserInfo.getUsername());
+		
+		// 회원 정보 DB 상에서 삭제
 		membersRepository.deleteById(currentUserInfo.getUsername());
 		
 		// 세션에 저장되어 있는 인증 정보 무효화.
@@ -134,6 +155,16 @@ public class MembersService {
 			.nickname(currentUserInfo.getUsername())
 			.build();
 		
+	}
+	
+	/**
+	 * 주어진 닉네임이 이미 DB 상에 존재하는지 여부를 반환.
+	 * 
+	 * @param nickname
+	 * @return
+	 */
+	public boolean existsMemberBy(String nickname) {
+		return membersRepository.existsById(nickname);
 	}
 	
 }
