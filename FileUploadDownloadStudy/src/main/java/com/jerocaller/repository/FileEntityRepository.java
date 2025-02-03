@@ -18,12 +18,13 @@ public interface FileEntityRepository
 	/**
 	 * 회원의 닉네임 변경 시 해당 유저가 보유한 파일들의 닉네임 정보도 
 	 * 그에 맞게 바꾼다. 
+	 * 유저 닉네임으로 맞춘 디렉토리명도 그에 맞게 바꾼다. 
 	 * 
 	 * \@Modifying - 해당 JPQL이 SELECT문이 아닌 DML 작업임을 명시.
 	 * 
 	 * flushAutomatically = true) 변경 쿼리문 실행 전 영속성 컨텍스트 내 
-	 * 정보들을 DB에 flush할 것인지 여부를 묻는 속성으로, true 시 그렇게 
-	 * 실행된다. 
+	 * 정보들을 DB에 flush(DB로의 영속화)할 것인지 여부를 묻는 속성으로, 
+	 * true 시 그렇게 실행된다. 
 	 * 여기서는 해당 속성을 true로 설정하지 않으면 외래키 조건에 부합하지 않는다며, 
 	 * 즉 부모 테이블에 없는 값으로 업데이트를 한다며 에러가 발생한다. 
 	 * 에러 메시지)
@@ -39,17 +40,33 @@ public interface FileEntityRepository
 	 * flush하여 DB에 새 회원 정보가 반영되게끔 해야 한다. 
 	 * 그래야 참조 무결성에 어긋나지 않게 파일 정보도 바꿀 수 있다. 
 	 * 
+	 * JPQL에서 미지원하는 Database function은 
+	 * function()이라는 함수를 통해 사용 가능. 
+	 * 
+	 * 참고 사이트)
+	 * replace() 함수)
+	 * https://coding-house.tistory.com/175
+	 * 
+	 * https://whitewise95.tistory.com/234
+	 * https://en.wikibooks.org/wiki/Java_Persistence/JPQL#Functions
+	 * 
 	 * @param oldMember
 	 * @param newMember
 	 */
 	@Modifying(flushAutomatically = true)
 	@Query("""
-		UPDATE FileEntity f 
-		SET f.members = :#{#newMember}
+		UPDATE FileEntity f
+		SET f.filePath = FUNCTION(
+			'REPLACE',
+			f.filePath, 
+			:#{#oldMember.nickname}, 
+			:#{#newMember.nickname}
+		),
+		f.members = :#{#newMember} 
 		WHERE f.members = :#{#oldMember}
 	""")
-	void updateUserInfo(
-		@Param("oldMember") Members oldMember, 
+	void updateUserInfoWithPath(
+		@Param("oldMember") Members oldMember,
 		@Param("newMember") Members newMember
 	);
 	

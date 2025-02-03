@@ -1,5 +1,8 @@
 package com.jerocaller.controller;
 
+import java.io.IOException;
+import java.nio.file.DirectoryNotEmptyException;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -19,6 +22,7 @@ import com.jerocaller.dto.MembersHistory;
 import com.jerocaller.dto.MembersRequest;
 import com.jerocaller.dto.MembersResponse;
 import com.jerocaller.dto.ResponseJson;
+import com.jerocaller.exception.DirectoryDeleteFailedException;
 import com.jerocaller.exception.NotAuthenticatedUserException;
 import com.jerocaller.exception.UserAlreadyExistException;
 import com.jerocaller.service.MembersService;
@@ -118,7 +122,6 @@ public class MembersController {
 		
 	}
 	
-	// TODO 회원 닉네임 변경 시 닉네임을 폴더명으로 가지는 디렉토리명도 변경.
 	/**
 	 * 현재 인증된 사용자의 회원 정보 수정
 	 * 
@@ -146,6 +149,11 @@ public class MembersController {
 				.httpStatus(HttpStatus.NOT_FOUND)
 				.message(ee.getMessage())
 				.build();
+		} catch (IOException ioe) {
+			responseJson = ResponseJson.builder()
+				.httpStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+				.message(ioe.getMessage())
+				.build();
 		}
 		
 		if (responseJson == null) {
@@ -159,7 +167,6 @@ public class MembersController {
 		return responseJson.toResponseEntity();
 	}
 	
-	// TODO 회원 탈퇴 시 회원 닉네임과 똑같은 이름을 가지는 디렉토리도 삭제하는 기능 추가.
 	/**
 	 * 회원 탈퇴. 
 	 * 현재 인증된 사용자에 한해서만 가능.
@@ -186,6 +193,22 @@ public class MembersController {
 			responseJson = ResponseJson.builder()
 				.httpStatus(HttpStatus.NOT_FOUND)
 				.message(ee.getMessage())
+				.build();
+		} catch (DirectoryNotEmptyException dnee) {
+			// 해당 유저의 파일들을 담던 디렉토리 삭제 실패의 경우. 
+			// 회원 탈퇴 자체는 진행되었기에 성공으로 간주
+			responseJson = ResponseJson.builder()
+				.httpStatus(HttpStatus.PARTIAL_CONTENT)
+				.message(dnee.getMessage())
+				.data(membersResponse)
+				.build();
+		} catch (DirectoryDeleteFailedException ddfe) {
+			// 해당 유저의 파일들을 담던 디렉토리 삭제 실패의 경우. 
+			// 회원 탈퇴 자체는 진행되었기에 성공으로 간주
+			responseJson = ResponseJson.builder()
+				.httpStatus(HttpStatus.PARTIAL_CONTENT)
+				.message(ddfe.getMessage())
+				.data(membersResponse)
 				.build();
 		}
 		
