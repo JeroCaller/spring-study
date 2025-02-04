@@ -91,6 +91,10 @@ public class MembersService {
 	/**
 	 * 회원 정보 수정.
 	 * 
+	 * 패스워드의 경우, 수정 시 수정 전과 똑같은 비밀번호로 수정하려고 해도 
+	 * 이 둘의 인코딩된 문자열은 서로 다르다. 따라서 닉네임, 비밀번호 
+	 * 모두 수정 전과 똑같은 정보를 입력받아도 이를 반려할 방법이 없음. 
+	 * 
 	 * @param request - 새로 수정할 회원 정보
 	 * @param pastUserInfo - 기존 회원 정보
 	 * @return
@@ -103,7 +107,7 @@ public class MembersService {
 	) throws 
 		NotAuthenticatedUserException, 
 		EntityNotFoundException, 
-		IOException 
+		IOException
 	{
 		
 		// 현재 인증된 정보가 없으면 런타임 예외 발생하여 throw함.
@@ -125,15 +129,17 @@ public class MembersService {
 			.nickname(membersRequest.getNickname())
 			.password(passwordEncoder.encode(membersRequest.getPassword()))
 			.build();
+		
 		Members updatedMember = membersRepository.save(willBeUpdatedMember);
 		
-		// 수정 전 닉네임 정보를 가지고 있는 모든 파일들의 닉네임 정보를 
-		// 수정 후 정보로 교체.
+		// 수정 전 닉네임 정보를 가지고 있는 모든 파일들의 닉네임 정보를 수정 후 정보로 교체.
 		fileByMemberService.updateUserInfoInFiles(oldMember, updatedMember);
 		
 		// 수정 전 정보 삭제
-		//membersRepository.deleteById(pastUserInfo.getUsername());
-		membersRepository.delete(oldMember);
+		// 수정 전후의 닉네임이 동일하다면 삭제하지 않는다. 
+		if (!oldMember.getNickname().equals(updatedMember.getNickname())) {
+			membersRepository.delete(oldMember);
+		}
 		
 		// 세션에 저장된 인증 정보를 수정 후 정보로 갱신
 		authService.login(membersRequest, request, response);
@@ -141,7 +147,6 @@ public class MembersService {
 		return MembersHistory.builder()
 			.pastNickname(pastUserInfo.getUsername())
 			.newNickname(updatedMember.getNickname())
-			//.newNickname(willBeUpdatedMember.getNickname())
 			.build();
 		
 	}

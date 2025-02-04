@@ -18,7 +18,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @Builder
 @ToString(callSuper = true)  // 부모 엔티티의 필드들까지 엔티티 객체 비교 대상 추가.
-@EqualsAndHashCode(callSuper = true) // 부모 엔티티의 필드들까지 비교 대상 추가.
+@EqualsAndHashCode(callSuper = false)
 public class Members extends BaseEntity {
 	
 	@Id
