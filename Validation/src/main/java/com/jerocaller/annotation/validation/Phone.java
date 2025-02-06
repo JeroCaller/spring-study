@@ -14,6 +14,6 @@ import jakarta.validation.Constraint;
 @Constraint(validatedBy = PhoneValidator.class)
 public @interface Phone {
 	String message() default "전화번호 형식과 일치하지 않습니다. 01x-xxx(x)-xxxx 형태여야 합니다.";
-	Class[] groups() default {};
-	Class[] payload() default {};
+	Class<?>[] groups() default {};
+	Class<?>[] payload() default {};
 }

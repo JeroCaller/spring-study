@@ -15,11 +15,9 @@ import com.jerocaller.validation.ValidationGroupOne;
 import com.jerocaller.validation.ValidationGroupTwo;
 
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/members")
 @Slf4j
 public class MemberController {
