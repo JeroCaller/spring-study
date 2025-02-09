@@ -18,7 +18,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-//@RestControllerAdvice
+@RestControllerAdvice
 @RequiredArgsConstructor
 @Slf4j
 public class CustomExceptionHandlerTwo {

@@ -20,7 +20,9 @@ import lombok.extern.slf4j.Slf4j;
  * 클라이언트로부터 넘어오는 HTTP 요청 정보를 \@RequestParam 등의 어노테이션이 적용된 컨트롤러 메서드의 파라미터와 
  * 매핑하는 역할을 한다. 
  * 이러한 구조로 인해 컨트롤러 메서드 내부, 또는 아래와 같은 일반적인 Advice로는 해당 예외를 처리할 수 없다. 
- * (모두 Handler Adapter와 Handler 외부에 존재하기 때문)
+ * (전자의 경우, Handler Adapter와 Handler 외부에 존재하기 때문. 
+ * 후자의 경우, \@RestControllerAdvice로 처리가 가능한 것으로 보아서는 AOP로 처리가 가능한 것 같은데, 
+ * 순수 AOP로 직접 처리하려면 아래 코드가 아닌 다른 방법을 써야 하는 것 같다. )
  * 가장 간단한 방법은 \@RestControllerAdvice 어노테이션이 적용된 클래스의 메서드 내부에서 \@ExceptionHandler
  * 어노테이션이 적용된 메서드 내부에서 처리하는 것이다. 
  * 

@@ -26,7 +26,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class MemberController {
 	
-	private final MemberServiceinterface<MemberServiceImpl> memberService;
+	private final MemberServiceinterface<MemberServiceCustomImpl> memberService;
 	
 	@GetMapping("/{id}")
 	public ResponseEntity<Object> getMethodName(
@@ -37,6 +37,7 @@ public class MemberController {
 		int result = memberService.getById(id);
 		
 		// MemberServiceImpl 전용
+		/*
 		return ApiResponse.builder()
 			.httpStatus(HttpStatus.OK)
 			.message("응답 성공")
@@ -44,19 +45,18 @@ public class MemberController {
 			.data(result)
 			.build()
 			.toResponse();
+		*/
 		
 		// MemberServiceCustomImpl 전용
-		/*
 		return ApiResponseCustom.builder()
 			.uri(request.getRequestURI())
 			.data(result)
 			.build()
 			.toResponse();
-		*/
 	}
 	
 	// MemberServiceCustomImpl 전용
-	//@PostMapping("/registration")
+	@PostMapping("/registration")
 	public ResponseEntity<Object> register( 
 		@Valid @RequestBody MemberRegister register,
 		HttpServletRequest request

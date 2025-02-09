@@ -26,7 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class FileController {
 	
-	private final FileServiceInterface<FileServiceImpl> fileService;
+	private final FileServiceInterface<FileServiceCustomImpl> fileService;
 	private final HttpServletRequest request;
 	
 	@GetMapping("/members/{memberId}")
@@ -37,6 +37,7 @@ public class FileController {
 		List<Integer> filesId = fileService.getFilesIdByMember(memberId);
 		
 		// FileServiceImpl 전용
+		/*
 		return ApiResponse.builder()
 			.httpStatus(HttpStatus.OK)
 			.message("응답 성공")
@@ -44,19 +45,18 @@ public class FileController {
 			.data(filesId)
 			.build()
 			.toResponse();
+		*/
 		
 		// FileServiceCustomImpl 전용.
-		/*
 		return ApiResponseCustom.builder()
 			.uri(request.getRequestURI())
 			.data(filesId)
 			.build()
 			.toResponse();
-		*/
 	}
 	
 	// FileServiceImpl 전용
-	@ExceptionHandler(value = RuntimeException.class)
+	//@ExceptionHandler(value = RuntimeException.class)
 	public ResponseEntity<Object> handleException(
 		RuntimeException e
 	) {
