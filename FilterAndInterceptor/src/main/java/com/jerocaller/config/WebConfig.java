@@ -4,7 +4,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import com.jerocaller.interceptor.SessionInterceptor;
+import com.jerocaller.interceptor.RequestInterceptor;
 import com.jerocaller.interceptor.TimeCheckerInterceptor;
 
 import lombok.RequiredArgsConstructor;
@@ -13,7 +13,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class WebConfig implements WebMvcConfigurer {
 	
-	private final SessionInterceptor sessionInterceptor;
+	private final RequestInterceptor requestInterceptor;
 	private final TimeCheckerInterceptor timeCheckerInterceptor;
 	
 	/**
@@ -21,13 +21,13 @@ public class WebConfig implements WebMvcConfigurer {
 	 */
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
-		//registry.addInterceptor(sessionInterceptor)
+		//registry.addInterceptor(requestInterceptor)
 		//	.addPathPatterns("/test/**");
 		
 		registry.addInterceptor(timeCheckerInterceptor)
 			.addPathPatterns("/test/**");
 		
-		registry.addInterceptor(sessionInterceptor)
+		registry.addInterceptor(requestInterceptor)
 			.addPathPatterns("/test/**");
 	}
 

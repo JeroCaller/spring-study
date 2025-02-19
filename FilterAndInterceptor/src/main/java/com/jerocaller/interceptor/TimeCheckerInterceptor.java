@@ -4,7 +4,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.jerocaller.common.SessionAttributeNames;
+import com.jerocaller.common.RequestAttributeNames;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -23,7 +23,7 @@ public class TimeCheckerInterceptor implements HandlerInterceptor {@Override
 		log.info("Time Checker Interceptor prehandle 호출");
 		
 		long startTime = System.currentTimeMillis();
-		request.setAttribute(SessionAttributeNames.START_TIME_INTERCEPTOR, startTime);
+		request.setAttribute(RequestAttributeNames.START_TIME_INTERCEPTOR, startTime);
 		
 		log.info("Time Checker Interceptor prehandle 끝");
 		
@@ -42,7 +42,7 @@ public class TimeCheckerInterceptor implements HandlerInterceptor {@Override
 		
 		long endTime = System.currentTimeMillis();
 		long startTime = (long) request.getAttribute(
-			SessionAttributeNames.START_TIME_INTERCEPTOR
+			RequestAttributeNames.START_TIME_INTERCEPTOR
 		);
 		long duration = endTime - startTime;
 		log.info("Time Checker Interceptor 동작 시간(밀리초): {}", duration);

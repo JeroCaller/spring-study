@@ -5,7 +5,7 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.stereotype.Component;
 
-import com.jerocaller.common.SessionAttributeNames;
+import com.jerocaller.common.RequestAttributeNames;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +27,7 @@ public class TestAdvice {
 		log.info("TestAdvice 호출됨.");
 		
 		httpRequest.setAttribute(
-			SessionAttributeNames.SESSION_AOP, 
+			RequestAttributeNames.REQUEST_AOP, 
 			"Hi From AOP"
 		);
 		

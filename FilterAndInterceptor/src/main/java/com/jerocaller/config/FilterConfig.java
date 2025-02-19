@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.jerocaller.filter.OnceFilter;
-import com.jerocaller.filter.SessionFilter;
+import com.jerocaller.filter.RequestFilter;
 import com.jerocaller.filter.TimeCheckerFilter;
 
 /**
@@ -20,11 +20,11 @@ import com.jerocaller.filter.TimeCheckerFilter;
 public class FilterConfig {
 	
 	@Bean
-	public FilterRegistrationBean<SessionFilter> sessionFilter() {
+	public FilterRegistrationBean<RequestFilter> sessionFilter() {
 		
-		FilterRegistrationBean<SessionFilter> bean 
-			= new FilterRegistrationBean<SessionFilter>();
-		bean.setFilter(new SessionFilter());
+		FilterRegistrationBean<RequestFilter> bean 
+			= new FilterRegistrationBean<RequestFilter>();
+		bean.setFilter(new RequestFilter());
 		//bean.addUrlPatterns("/test/*");
 		bean.setOrder(2);
 		return bean;

@@ -2,7 +2,7 @@ package com.jerocaller.filter;
 
 import java.io.IOException;
 
-import com.jerocaller.common.SessionAttributeNames;
+import com.jerocaller.common.RequestAttributeNames;
 
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
@@ -15,7 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @WebFilter(urlPatterns = "/test/*")
 @Slf4j
-public class SessionFilter extends HttpFilter implements Filter {
+public class RequestFilter extends HttpFilter implements Filter {
 
 	@Override
 	protected void doFilter(
@@ -24,18 +24,18 @@ public class SessionFilter extends HttpFilter implements Filter {
 		FilterChain chain
 	) throws IOException, ServletException {
 		
-		log.info("Session Filter 호출");
+		log.info("Request Filter 호출");
 		
-		request.setAttribute(SessionAttributeNames.SESSION_FILTER, "Hi From session filter");
+		request.setAttribute(RequestAttributeNames.REQUEST_FILTER, "Hi From request filter");
 		
 		chain.doFilter(request, response);
 		
-		String sessionFilterValue = (String) request.getAttribute(
-			SessionAttributeNames.SESSION_FILTER
+		String requestFilterValue = (String) request.getAttribute(
+			RequestAttributeNames.REQUEST_FILTER
 		);
-		log.info("sessionFilterValue: {}", sessionFilterValue);
+		log.info("requestFilterValue: {}", requestFilterValue);
 		
-		log.info("Session Filter 끝");
+		log.info("request Filter 끝");
 		
 	}
 	
