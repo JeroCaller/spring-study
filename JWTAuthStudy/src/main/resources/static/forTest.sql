@@ -1,0 +1,22 @@
+CREATE DATABASE IF NOT EXISTS test_auth;
+USE test_auth;
+
+DROP TABLE IF EXISTS tb_comment;
+DROP TABLE IF EXISTS tb_user;
+
+CREATE TABLE IF NOT EXISTS tb_user(
+	id INT PRIMARY KEY AUTO_INCREMENT,
+	username VARCHAR(20) NOT NULL UNIQUE,
+	password VARCHAR(100) NOT NULL,
+	role_name VARCHAR(10) DEFAULT 'USER'
+);
+
+CREATE TABLE IF NOT EXISTS tb_comment(
+	id INT PRIMARY KEY AUTO_INCREMENT,
+	comment VARCHAR(1000) DEFAULT '',
+	user_id INT NOT NULL
+);
+
+ALTER TABLE tb_comment
+	ADD CONSTRAINT fk_tb_user_tb_comment_user_id
+		FOREIGN KEY (user_id) REFERENCES tb_user(id);
