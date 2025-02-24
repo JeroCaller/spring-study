@@ -8,4 +8,6 @@ public interface RoleNames {
     
     final String ANONYMOUS = "ANONYMOUS";
     
+    final String ROLE_PREFIX = "ROLE_";
+    
 }

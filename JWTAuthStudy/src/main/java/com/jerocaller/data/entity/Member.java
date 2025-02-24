@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
+import com.jerocaller.common.RoleNames;
 import com.jerocaller.data.dto.request.MemberRequest;
 
 import jakarta.persistence.Column;
@@ -48,9 +49,8 @@ public class Member implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         
-        final String prefix = "ROLE_";
         GrantedAuthority auth = new SimpleGrantedAuthority(
-            prefix + this.role
+            RoleNames.ROLE_PREFIX + this.role
         );
                 
         return Arrays.asList(auth);

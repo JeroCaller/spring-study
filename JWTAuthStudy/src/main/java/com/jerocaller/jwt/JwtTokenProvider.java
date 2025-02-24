@@ -2,13 +2,17 @@ package com.jerocaller.jwt;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.crypto.SecretKey;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
@@ -16,6 +20,7 @@ import org.springframework.stereotype.Component;
 import com.jerocaller.common.CookieNames;
 import com.jerocaller.common.ExpirationTime;
 import com.jerocaller.common.RequestHeaderNames;
+import com.jerocaller.common.RoleNames;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -29,7 +34,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class JwtTokenProvider {
     
-    private final UserDetailsService userDetailsService;
+    // 로그인 후라면 이미 사용자 정보가 JWT에 담겨져 있으므로 
+    // JWT에 있는 사용자 정보를 활용하는 것이 DB 부담을 줄일 수 있다. 
+    // 즉, 한 번 인증이 되었다면 그 이후 다른 요청을 할 때 
+    // 해당 사용자는 인증된 사용자라고 가정하는 방식.
+    //private final UserDetailsService userDetailsService;
     private final JwtCookieUtil jwtCookieUtil;
     
     /**
@@ -73,13 +82,27 @@ public class JwtTokenProvider {
     public Authentication getAuthentication(String token) {
         
         String username = extractUsernameFromToken(token);
-        UserDetails member = userDetailsService.loadUserByUsername(username);
+        //UserDetails member = userDetailsService.loadUserByUsername(username);
         
+        String role = (String) extractClaims(token).get("role");
+        log.info("=== [getAuthentication] JWT로부터 추출한 사용자의 역할: {}", role);
+        
+        List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
+        authorities.add(new SimpleGrantedAuthority(RoleNames.ROLE_PREFIX + role));
+        
+        // 두 번째 인자에는 credential(자격 증명)를 넣는데, 보통은 패스워드를 넣는다. 
+        // 그런데 패스워드를 얻으려면 DB로부터 조회해야 하는데, 이는 DB 접근을 최소화하는 장점을 
+        // 가진 JWT의 그 장점을 활용하지 못하는 것이다. 
+        // 따라서 아무 값도 넣지 않거나, 아니면 JWT 토큰 자체를 넣을 수도 있다. 
+        return new UsernamePasswordAuthenticationToken(username, null, authorities);
+        
+        /*
         return new UsernamePasswordAuthenticationToken(
             member.getUsername(), 
             null, 
             member.getAuthorities()
         );
+        */
     }
     
     private Claims extractClaims(String token) {
