@@ -113,10 +113,13 @@ public class JwtTokenProvider {
         if (tokenHeader != null && 
             tokenHeader.startsWith(RequestHeaderNames.BEARER)
         ) {
-            token = tokenHeader.substring(RequestHeaderNames.BEARER.length());
+            token = tokenHeader.substring(RequestHeaderNames.BEARER.length())
+                .trim();
+            log.info("Request Header로부터 JWT 추출 성공.");
         } else {
             // 요청 헤더에 없다면 요청으로 넘어온 쿠키에 jwt 값이 있는지 확인 후 추출 시도.
             token = jwtCookieUtil.extractJwtFromCookies(request);
+            log.info("Request에 포함된 Cookie로부터 JWT 추출 성공");
         }
         return token;
     }
