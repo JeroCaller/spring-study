@@ -2,6 +2,8 @@ package com.jerocaller.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -48,6 +50,7 @@ public class SecurityConfig {
             )
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(permitAllRequestUris).permitAll()
+                /*
                 .requestMatchers("/comments/others/users").hasAnyRole(
                     RoleNames.USER, RoleNames.STAFF, RoleNames.ADMIN
                 )
@@ -56,7 +59,10 @@ public class SecurityConfig {
                 )
                 .requestMatchers("/comments/others/admins").hasAnyRole(
                     RoleNames.ADMIN
-                )
+                ) */
+                .requestMatchers("/comments/others/users").hasRole(RoleNames.USER)
+                .requestMatchers("/comments/others/staffs").hasRole(RoleNames.STAFF)
+                .requestMatchers("/comments/others/admins").hasRole(RoleNames.ADMIN)
                 .anyRequest().authenticated()
             )
             .logout(logout -> logout
@@ -82,6 +88,17 @@ public class SecurityConfig {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
     
-    // TODO - Role 계층 구현하기.
+    /**
+     * Role 계층 구성. 
+     * 
+     * @return
+     */
+    @Bean
+    public RoleHierarchy roleHierarchy() {
+        return RoleHierarchyImpl.withDefaultRolePrefix()
+            .role(RoleNames.ADMIN).implies(RoleNames.STAFF)
+            .role(RoleNames.STAFF).implies(RoleNames.USER)
+            .build();
+    }
     
 }
