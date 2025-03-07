@@ -37,6 +37,7 @@ public class MemberResponse {
         return MemberResponse.builder()
             .id(entity.getId())
             .username(entity.getUsername())
+            .email(entity.getEmail())
             .role(entity.getRole())
             .tokens(tokens)
             .build();

@@ -39,4 +39,14 @@ public class OAuth2Controller {
             .toResponse();
     }
     
+    @GetMapping("/login/failure")
+    public ResponseEntity<RestResponse> loginFailure() {
+        
+        return RestResponse.builder()
+            .httpStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+            .message("OAuth2 인증 실패")
+            .build()
+            .toResponse();
+    }
+    
 }

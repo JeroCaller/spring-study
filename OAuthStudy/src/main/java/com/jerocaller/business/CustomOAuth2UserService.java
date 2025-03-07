@@ -8,6 +8,7 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
+import com.jerocaller.common.RoleNames;
 import com.jerocaller.data.entity.Member;
 import com.jerocaller.data.repository.MemberRepository;
 import com.jerocaller.util.MapUtil;
@@ -44,7 +45,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
      * @param oAuth2User
      * @return
      */
-    private Member saveOrUpdate(OAuth2User oAuth2User) {
+    public Member saveOrUpdate(OAuth2User oAuth2User) {
         
         Map<String, Object> attributes = oAuth2User.getAttributes();
         String email = (String) attributes.get("email");
@@ -55,6 +56,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 Member.builder()
                     .email(email)
                     .username(name)
+                    .role(RoleNames.USER)
+                    .password("GoogleOAuth") // NN 회피용. 실제 사용되는 패스워드 아님.
                     .build()
             );
         return memberRepository.save(member);

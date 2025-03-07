@@ -23,6 +23,7 @@ import org.springframework.web.filter.CorsFilter;
 
 import com.jerocaller.business.CustomOAuth2UserService;
 import com.jerocaller.config.filter.CorsLoggingFilter;
+import com.jerocaller.config.oauth.OAuth2FailureHandler;
 import com.jerocaller.config.oauth.OAuth2SuccessHandler;
 import com.jerocaller.jwt.JwtAuthenticationFilter;
 
@@ -85,6 +86,7 @@ public class SecurityConfig {
                     .userService(customOAuth2UserService)
                 )
                 .successHandler(oAuth2SuccessHandler)
+                .failureHandler(new OAuth2FailureHandler())
             )
             .exceptionHandling(handler -> handler
                 .authenticationEntryPoint(authenticationEntryPoint)
@@ -116,13 +118,17 @@ public class SecurityConfig {
         
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList(
-            "http://localhost:8080", 
+            //"http://localhost:8080", 
             "http://localhost:3000"
         ));
         configuration.setAllowedMethods(Arrays.asList(
             "GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"
         ));
         configuration.setAllowedHeaders(Arrays.asList("*"));
+        
+        //configuration.setAllowedHeaders(Arrays.asList(
+        //    "Access-Control-Allow-Origin"
+        //));
         
         // 클라이언트로부터 인증 정보(credential) 전송 시
         // 이를 받도록 허용할 것인지 여부 설정. 

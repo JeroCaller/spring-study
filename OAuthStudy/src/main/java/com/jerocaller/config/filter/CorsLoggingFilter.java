@@ -33,10 +33,13 @@ public class CorsLoggingFilter extends OncePerRequestFilter {
             "CORS Response Headers: {}", 
             accessControlAllowOrigin
         );
-        log.info(
-            "CORS Are their Origin Same? : {}", 
-            originOnRequest.equals(accessControlAllowOrigin)
-        );
+        
+        if (originOnRequest != null && accessControlAllowOrigin != null) {
+            log.info(
+                "CORS Are their Origin Same? : {}", 
+                originOnRequest.equals(accessControlAllowOrigin)
+            );
+        }
         
         log.info("===== CORS 필터 logging 끝 =====");
         
