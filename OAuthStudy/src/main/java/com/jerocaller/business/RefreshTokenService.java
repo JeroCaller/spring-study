@@ -27,7 +27,9 @@ public class RefreshTokenService {
     
     public RefreshToken findRefreshToken(String refreshToken) {
         return refreshTokenRepository.findByRefreshToken(refreshToken)
-            .orElseThrow(() -> new EntityNotFoundException("조회된 refresh token 없음."));
+            .orElseThrow(() -> 
+                new EntityNotFoundException("조회된 refresh token 없음.")
+            );
     }
     
     @Transactional

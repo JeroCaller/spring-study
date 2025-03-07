@@ -7,20 +7,17 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import com.jerocaller.business.CustomOAuth2UserService;
 import com.jerocaller.business.MemberService;
 import com.jerocaller.business.RefreshTokenService;
-import com.jerocaller.common.CookieNames;
 import com.jerocaller.common.ExpirationTime;
 import com.jerocaller.data.dto.request.CookieRequest;
-import com.jerocaller.data.dto.request.MemberRequest;
 import com.jerocaller.data.entity.Member;
 import com.jerocaller.data.entity.RefreshToken;
-import com.jerocaller.data.repository.MemberRepository;
 import com.jerocaller.jwt.JwtTokenProvider;
 import com.jerocaller.util.CookieUtil;
+import com.jerocaller.util.MapUtil;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.ServletException;
@@ -43,7 +40,6 @@ public class OAuth2SuccessHandler
     private final CookieUtil cookieUtil;
     private final CustomOAuth2UserService customOAuth2UserService;
     
-    //private final String REDIRECT_URI = "/oauth2/login/success";
     @Value("${frontend.url.oauth2.login.success}")
     private String REDIRECT_URI;
     
@@ -56,6 +52,23 @@ public class OAuth2SuccessHandler
         
         // 리프레시 토큰 DB 저장을 위해 DB로부터 현재 유저 정보 추출.
         OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
+        Member member = getMemberFromDB(oAuth2User);
+        
+        // 구글로부터 얻어온 사용자 정보에는 무엇이 있는지 logging
+        MapUtil.logMap(oAuth2User.getAttributes());
+        
+        // 액세스 토큰 및 리프레시 토큰 발행 및 두 토큰 모두 쿠키에 전송
+        publishTokensAndAddToCookie(request, response, member);
+        
+        // 인증을 위해 생성, 저장된 관련 설정값들을 보안을 위해 쿠키, 세션에서 제거.
+        clearAuthenticationStates(request, response);
+        
+        getRedirectStrategy().sendRedirect(request, response, REDIRECT_URI);
+        
+    }
+    
+    private Member getMemberFromDB(OAuth2User oAuth2User) {
+        
         String emailByOAuth = oAuth2User.getAttribute("email");
         
         Member member = null;
@@ -65,6 +78,16 @@ public class OAuth2SuccessHandler
             // 해당 유저가 DB에 존재하지 않을 경우 DB에 등록한다. 
             member = customOAuth2UserService.saveOrUpdate(oAuth2User);
         }
+        //Member member = memberService.getByEmail(emailByOAuth);
+        
+        return member;
+    }
+    
+    private void publishTokensAndAddToCookie(
+        HttpServletRequest request, 
+        HttpServletResponse response, 
+        Member member
+    ) {
         
         // 액세스 토큰 발급
         String accessToken = jwtTokenProvider.createToken(
@@ -77,27 +100,16 @@ public class OAuth2SuccessHandler
             .createAndSaveRefreshToken(member);
         
         // 두 토큰 모두 쿠키에 전송
-        CookieRequest accessTokenRequest = CookieRequest.builder()
-            .cookieName(CookieNames.ACCESS_TOKEN)
-            .cookieValue(accessToken)
-            .maxAge(ExpirationTime.ACCESS_TOKEN_IN_SECONDS)
-            .build();
-        CookieRequest refreshTokenRequest = CookieRequest.builder()
-            .cookieName(CookieNames.REFRESH_TOKEN)
-            .cookieValue(refreshToken.getRefreshToken())
-            .maxAge(ExpirationTime.REFRESH_TOKEN_IN_SECONDS)
-            .build();
+        CookieRequest accessTokenRequest = CookieRequest
+            .toRequestForAccessToken(accessToken);
+        CookieRequest refreshTokenRequest = CookieRequest
+            .toRequestForRefreshToken(refreshToken.getRefreshToken());
         addTokenToCookie(
             request, 
             response, 
             accessTokenRequest, 
             refreshTokenRequest
         );
-        
-        // 인증을 위해 생성, 저장된 관련 설정값들을 보안을 위해 쿠키, 세션에서 제거.
-        clearAuthenticationStates(request, response);
-        
-        getRedirectStrategy().sendRedirect(request, response, REDIRECT_URI);
         
     }
     

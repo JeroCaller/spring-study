@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 import com.jerocaller.common.RequestHeaderNames;
 import com.jerocaller.common.RoleNames;
 import com.jerocaller.data.entity.Member;
+import com.jerocaller.util.CookieUtil;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -30,6 +31,8 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class JwtTokenProvider {
+    
+    private final CookieUtil cookieUtil;
     
     /**
      * <p>
@@ -117,7 +120,7 @@ public class JwtTokenProvider {
      * @param request
      * @return
      */
-    public String resolveToken(HttpServletRequest request) {
+    public String resolveToken(HttpServletRequest request, String cookieName) {
         
         String token = null;
         String tokenHeader = request.getHeader(RequestHeaderNames.AUTH_TOKEN);
@@ -128,6 +131,8 @@ public class JwtTokenProvider {
         ) {
             token = tokenHeader.substring(RequestHeaderNames.BEARER.length());
             log.info("Request Header로부터 JWT 추출 성공.");
+        } else {
+            token = cookieUtil.extractJwtFromCookies(request, cookieName);
         }
         return token;
     }

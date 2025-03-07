@@ -10,6 +10,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * 구글 OAuth 로그인에 대해 CORS 에러가 발생하여 이를 바로잡기 위한 로깅 필터. 
+ * 현재는 해당 문제 해결함.
+ */
 @Slf4j
 public class CorsLoggingFilter extends OncePerRequestFilter {
 

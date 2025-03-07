@@ -66,7 +66,16 @@ public class OAuth2AuthorizationRequestBasedOnCookieRepository
         cookieUtil.addCookie(response, cookieRequest);
         
     }
-
+    
+    /**
+     * 참고 자료를 따라 구현함. 이 메서드에서 단순히 loadAuthorizationRequest() 메서드의 반환값을 
+     * 그대로 반환하도록 한 이유는 권한 요청을 위한 상태 정보들을 쿠키에 담아 임시로 저장하는 방식을 채택할 경우, 
+     * 이를 삭제하기 위해 별도의 메서드를 만들어 해당 메서드를 사용할 의도로 추정됨. 
+     * 쿠키에 담긴 요청 정보를 삭제한다는 것을 부각 시키기 위한 의미도 있을 것으로 추측됨. 
+     * 따라서 이 경우 별도의 메서드를 만들었기에 이 메서드를 오버라이딩할 필요가 없어 
+     * 임시로 이러한 코드를 둔 것으로 추측됨. 
+     * 
+     */
     @Override
     public OAuth2AuthorizationRequest removeAuthorizationRequest(
         HttpServletRequest request,

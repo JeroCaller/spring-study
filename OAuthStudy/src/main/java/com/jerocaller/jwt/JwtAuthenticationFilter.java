@@ -7,6 +7,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.jerocaller.common.CookieNames;
 import com.jerocaller.common.RoleNames;
 
 import jakarta.servlet.FilterChain;
@@ -30,7 +31,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         FilterChain filterChain
     ) throws ServletException, IOException {
         
-        String accessToken = jwtTokenProvider.resolveToken(request);
+        String accessToken = jwtTokenProvider.resolveToken(
+            request, 
+            CookieNames.ACCESS_TOKEN
+        );
         
         if (accessToken != null && jwtTokenProvider.validateToken(accessToken)) {
             Authentication auth = jwtTokenProvider.getAuthentication(accessToken);

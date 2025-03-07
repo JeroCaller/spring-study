@@ -1,5 +1,8 @@
 package com.jerocaller.data.dto.request;
 
+import com.jerocaller.common.CookieNames;
+import com.jerocaller.common.ExpirationTime;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,5 +23,23 @@ public class CookieRequest {
     int maxAge;
     String cookieValue;
     String cookieName;
+    
+    public static CookieRequest toRequestForAccessToken(String accessToken) {
+        
+        return CookieRequest.builder()
+            .cookieName(CookieNames.ACCESS_TOKEN)
+            .cookieValue(accessToken)
+            .maxAge(ExpirationTime.ACCESS_TOKEN_IN_SECONDS)
+            .build();
+    }
+    
+    public static CookieRequest toRequestForRefreshToken(String refreshToken) {
+        
+        return CookieRequest.builder()
+            .cookieName(CookieNames.REFRESH_TOKEN)
+            .cookieValue(refreshToken)
+            .maxAge(ExpirationTime.REFRESH_TOKEN_IN_SECONDS)
+            .build();
+    }
     
 }
