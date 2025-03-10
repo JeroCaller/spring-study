@@ -8,7 +8,6 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
-import com.jerocaller.business.CustomOAuth2UserService;
 import com.jerocaller.business.MemberService;
 import com.jerocaller.business.RefreshTokenService;
 import com.jerocaller.common.ExpirationTime;
@@ -19,7 +18,6 @@ import com.jerocaller.jwt.JwtTokenProvider;
 import com.jerocaller.util.CookieUtil;
 import com.jerocaller.util.MapUtil;
 
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -38,7 +36,6 @@ public class OAuth2SuccessHandler
     private final MemberService memberService;
     private final RefreshTokenService refreshTokenService;
     private final CookieUtil cookieUtil;
-    private final CustomOAuth2UserService customOAuth2UserService;
     
     @Value("${frontend.url.oauth2.login.success}")
     private String REDIRECT_URI;
@@ -71,14 +68,7 @@ public class OAuth2SuccessHandler
         
         String emailByOAuth = oAuth2User.getAttribute("email");
         
-        Member member = null;
-        try {
-            member = memberService.getByEmail(emailByOAuth);
-        } catch (EntityNotFoundException e) {
-            // 해당 유저가 DB에 존재하지 않을 경우 DB에 등록한다. 
-            member = customOAuth2UserService.saveOrUpdate(oAuth2User);
-        }
-        //Member member = memberService.getByEmail(emailByOAuth);
+        Member member = memberService.getByEmail(emailByOAuth);
         
         return member;
     }

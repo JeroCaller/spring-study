@@ -22,6 +22,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
 import com.jerocaller.business.CustomOAuth2UserService;
+import com.jerocaller.business.CustomOidcUserService;
 import com.jerocaller.config.filter.CorsLoggingFilter;
 import com.jerocaller.config.oauth.OAuth2FailureHandler;
 import com.jerocaller.config.oauth.OAuth2SuccessHandler;
@@ -35,6 +36,7 @@ import lombok.RequiredArgsConstructor;
 public class SecurityConfig {
     
     private final CustomOAuth2UserService customOAuth2UserService;
+    private final CustomOidcUserService customOidcUserService;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final AuthorizationRequestRepository<OAuth2AuthorizationRequest>
         authorizationRequestRepository;
@@ -83,7 +85,12 @@ public class SecurityConfig {
                     )
                 )
                 .userInfoEndpoint(endPoint -> endPoint
+                    // userService: Google과 같이 OIDC 프로토콜 사용 provider에 
+                    // 대해선 동작하지 않음.
+                    // 그럼에도 만약 구글 뿐만 아니라 다른 third-party provider들도 
+                    // 사용할 예정이라면 확장성을 위해서라면 둘 다 작성하는 것이 좋겠다. 
                     .userService(customOAuth2UserService)
+                    .oidcUserService(customOidcUserService)
                 )
                 .successHandler(oAuth2SuccessHandler)
                 .failureHandler(new OAuth2FailureHandler())
